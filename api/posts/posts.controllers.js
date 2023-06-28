@@ -7,8 +7,11 @@ exports.fetchPost = async (postId) => {
 
 exports.postsCreate = async (req, res, next) => {
   try {
+    if (req.file) {
+      req.body.image = `${req.file.path.replace("\\", "/")}`;
+    }
     const newPost = await Post.create(req.body);
-    res.status(201).json(newPost);
+    return res.status(201).json(newPost);
   } catch (error) {
     return next(error);
   }
@@ -16,7 +19,7 @@ exports.postsCreate = async (req, res, next) => {
 
 exports.postsDelete = async (req, res, next) => {
   try {
-    req.post.deleteOne();
+    await req.post.deleteOne();
     res.status(204).end();
   } catch (error) {
     return next(error);
@@ -26,7 +29,7 @@ exports.postsDelete = async (req, res, next) => {
 exports.postsUpdate = async (req, res, next) => {
   try {
     await req.post.updateOne(req.body);
-    res.status(204).end();
+    return res.status(204).end();
   } catch (error) {
     return next(error);
   }
@@ -35,9 +38,9 @@ exports.postsUpdate = async (req, res, next) => {
 exports.postsGet = async (req, res, next) => {
   try {
     const posts = await Post.find();
-    res.json(posts);
+    return res.json(posts);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
